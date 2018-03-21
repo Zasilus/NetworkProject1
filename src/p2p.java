@@ -67,16 +67,17 @@ public class p2p{
         String neighbor1 = fileReader.readLine();
         String neighbor2 = fileReader.readLine();
         InetAddress host = p2p.getPublicHostName();
-        System.out.println(host.getHostAddress());
+        System.out.println(host.getHostName());
+        //System.out.println(host.getHostAddress());
         Socket[] neighbor = new Socket[2];
         String [] neighbor1Arr = neighbor1.split(" ");
         String [] neighbor2Arr = neighbor2.split(" ");
-        System.out.println(host.toString());
+        //System.out.println(host.toString());
         int portNo1 = Integer.parseInt(neighbor1Arr[1]);
         int portNo2 = Integer.parseInt(neighbor2Arr[1]);
         InetAddress neighbor1address = InetAddress.getByName("eecslab-14.EECS.CWRU.edu.");
         System.out.println("Attempting to connect to neighbor " + neighbor1address.toString() + " on port number " + portNo1);
-        neighbor[0] = new Socket(neighbor1address,portNo1, host, 50241);
+        //neighbor[0] = new Socket(neighbor1address,portNo1, host, 50241);
         neighbor[1] = new Socket(neighbor2Arr[0],portNo2, host, 50242);
         return neighbor;
     }
