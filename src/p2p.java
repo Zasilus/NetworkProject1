@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 public class p2p{
     private static Thread thread1;
-    Socket neighbor1Socket;
-    Socket neighbor2Socket;
+    private static Socket[] neighbors = new Socket[2];
     private static Thread welcome;
     private static Thread input;
     private static Thread sending;
@@ -24,7 +23,7 @@ public class p2p{
         BufferedReader userInputs = new BufferedReader(new InputStreamReader(System.in));
         String command = userInputs.readLine();
         if(command.equalsIgnoreCase("connect")){
-            connect();
+            neighbors = connect();
         }
         welcome = new Thread(){
             @Override
@@ -63,7 +62,7 @@ public class p2p{
      * @throws Exception
      */
     public static Socket[] connect() throws Exception{
-        BufferedReader fileReader = new BufferedReader((new FileReader("src//config_neighbors.txt")));
+        BufferedReader fileReader = new BufferedReader((new FileReader("config_neighbors.txt")));
         String neighbor1 = fileReader.readLine();
         String neighbor2 = fileReader.readLine();
         InetAddress host = p2p.getPublicHostName();
@@ -75,10 +74,11 @@ public class p2p{
         //System.out.println(host.toString());
         int portNo1 = Integer.parseInt(neighbor1Arr[1]);
         int portNo2 = Integer.parseInt(neighbor2Arr[1]);
-        InetAddress neighbor1address = InetAddress.getByName("eecslab-14.EECS.CWRU.edu.");
+        InetAddress neighbor1address = InetAddress.getByName(neighbor1Arr[0]);
+        InetAddress neighbor2address = InetAddress.getByName(neighbor2Arr[0]);
         System.out.println("Attempting to connect to neighbor " + neighbor1address.toString() + " on port number " + portNo1);
-        //neighbor[0] = new Socket(neighbor1address,portNo1, host, 50241);
-        neighbor[1] = new Socket(neighbor2Arr[0],portNo2, host, 50242);
+        neighbor[0] = new Socket(neighbor1address,portNo1, host, 50241);
+        neighbor[1] = new Socket(neighbor2address,portNo2, host, 50242);
         return neighbor;
     }
 
@@ -110,8 +110,8 @@ public class p2p{
     }
 
     public void leave()throws Exception{
-        neighbor1Socket.close();
-        neighbor2Socket.close();
+        neighbors[1].close();
+        neighbors[0].close();
     }
 
     public void exit(ServerSocket welcomeSocket, Socket neighbor1, Socket neighbor2, Socket connectionSocket) throws Exception{

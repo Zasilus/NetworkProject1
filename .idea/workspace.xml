@@ -3,13 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="8c89efd8-af6c-44a3-a267-d46225bf4c38" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/out/production/Project/ProofOfConcept$Multithreading.class" afterPath="$PROJECT_DIR$/out/production/Project/ProofOfConcept$Multithreading.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/Project/ProofOfConcept.class" afterPath="$PROJECT_DIR$/out/production/Project/ProofOfConcept.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/Project/TCPServer.class" afterPath="$PROJECT_DIR$/out/production/Project/TCPServer.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/Project/config_neighbors.txt" afterPath="$PROJECT_DIR$/out/production/Project/config_neighbors.txt" />
-      <change beforePath="$PROJECT_DIR$/out/production/Project/p2p$1.class" afterPath="$PROJECT_DIR$/out/production/Project/p2p$1.class" />
-      <change beforePath="$PROJECT_DIR$/out/production/Project/p2p$MultiThreading.class" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/out/production/Project/p2p.class" afterPath="$PROJECT_DIR$/out/production/Project/p2p.class" />
+      <change beforePath="$PROJECT_DIR$/src/config_neighbors.txt" afterPath="$PROJECT_DIR$/src/config_neighbors.txt" />
       <change beforePath="$PROJECT_DIR$/src/p2p.java" afterPath="$PROJECT_DIR$/src/p2p.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -53,18 +47,28 @@
       <file leaf-file-name="p2p.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/p2p.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="231">
-              <caret line="74" column="46" lean-forward="true" selection-start-line="74" selection-start-column="46" selection-end-line="74" selection-end-column="46" />
+            <state relative-caret-position="468">
+              <caret line="88" column="0" lean-forward="true" selection-start-line="88" selection-start-column="0" selection-end-line="88" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#445#453#0" expanded="true" />
-                <element signature="e#951#1393#0" expanded="true" />
-                <element signature="e#1392#1393#0" expanded="true" />
-                <element signature="e#1432#1552#0" expanded="true" />
-                <element signature="e#1551#1552#0" expanded="true" />
-                <element signature="e#1571#1691#0" expanded="true" />
-                <element signature="e#1690#1691#0" expanded="true" />
+                <element signature="e#444#452#0" expanded="true" />
+                <element signature="e#962#1404#0" expanded="true" />
+                <element signature="e#1403#1404#0" expanded="true" />
+                <element signature="e#1443#1563#0" expanded="true" />
+                <element signature="e#1562#1563#0" expanded="true" />
+                <element signature="e#1582#1702#0" expanded="true" />
+                <element signature="e#1701#1702#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="config_neighbors.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/config_neighbors.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="21">
+              <caret line="1" column="31" lean-forward="true" selection-start-line="1" selection-start-column="31" selection-end-line="1" selection-end-column="31" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -388,7 +392,14 @@
       <option name="project" value="LOCAL" />
       <updated>1521671330932</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="This is my networks fixing shit.">
+      <created>1521675108183</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1521675108183</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -429,7 +440,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Fixed and made proof of concept for theIsINShared Method" />
     <MESSAGE value="Changed implementation used multiple threads now added in all said threads but they are empty." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed implementation used multiple threads now added in all said threads but they are empty." />
+    <MESSAGE value="This is my networks fixing shit." />
+    <option name="LAST_COMMIT_MESSAGE" value="This is my networks fixing shit." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -496,19 +508,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/config_neighbors.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="21">
+          <caret line="1" column="31" lean-forward="true" selection-start-line="1" selection-start-column="31" selection-end-line="1" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/p2p.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="74" column="46" lean-forward="true" selection-start-line="74" selection-start-column="46" selection-end-line="74" selection-end-column="46" />
+        <state relative-caret-position="468">
+          <caret line="88" column="0" lean-forward="true" selection-start-line="88" selection-start-column="0" selection-end-line="88" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#445#453#0" expanded="true" />
-            <element signature="e#951#1393#0" expanded="true" />
-            <element signature="e#1392#1393#0" expanded="true" />
-            <element signature="e#1432#1552#0" expanded="true" />
-            <element signature="e#1551#1552#0" expanded="true" />
-            <element signature="e#1571#1691#0" expanded="true" />
-            <element signature="e#1690#1691#0" expanded="true" />
+            <element signature="e#444#452#0" expanded="true" />
+            <element signature="e#962#1404#0" expanded="true" />
+            <element signature="e#1403#1404#0" expanded="true" />
+            <element signature="e#1443#1563#0" expanded="true" />
+            <element signature="e#1562#1563#0" expanded="true" />
+            <element signature="e#1582#1702#0" expanded="true" />
+            <element signature="e#1701#1702#0" expanded="true" />
           </folding>
         </state>
       </provider>
