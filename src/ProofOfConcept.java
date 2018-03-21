@@ -25,19 +25,16 @@ public class ProofOfConcept {
     }
 
     public static void main(String args[]) throws Exception{
-        File directory = new File("src\\config_neighbors.txt");
+        File directory = new File("src\\config_neighbors.txt").getAbsoluteFile();
         BufferedReader reader = new BufferedReader(new FileReader(directory));
         //System.out.println(reader.readLine());
         File parent  = directory.getParentFile();
         File parent2 = directory.getAbsoluteFile().getParentFile();
         //System.out.println(parent2);
         File grandParent = parent2.getParentFile();
-        File newFile = new File(System.getProperty("user.dir"));
-        System.out.println(newFile.getCanonicalPath());
-        File trueDirectory = new File("C:\\Users\\Owner\\Documents\\Case Western\\Sophmore Year\\Networks");
-        System.out.println(isInShared(parent,directory));
+        File currentDirectory= new File(System.getProperty("user.dir"));
+        System.out.println(isInShared(currentDirectory,directory));
         String s = directory.getAbsolutePath();
-        System.out.println(s);
     }
 
 }
