@@ -1,2 +1,2 @@
-eecslab-14.EECS.CWRU.edu. 50240
-eecslab-10.EECS.CWRU.edu. 50240
+eecslab-11.EECS.CWRU.edu. 50240
+eecslab-13.EECS.CWRU.edu. 50240
