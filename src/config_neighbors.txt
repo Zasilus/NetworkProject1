@@ -1,2 +1,2 @@
-eecslab-14.case.edu 50240
-eecslab-10.case.edu 50240
+eecslab-14.EECS.CWRU.edu. 50240
+eecslab-10.EECS.CWRU.edu. 50240

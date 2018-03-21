@@ -7,8 +7,10 @@ class TCPServer {
         String clientSentence;
         String capitalizedSentence;
 
-        ServerSocket welcomeSocket = new ServerSocket(6789);
-
+        ServerSocket welcomeSocket = new ServerSocket(50240);
+        InetAddress welcomeSocketAddress = welcomeSocket.getInetAddress();
+        System.out.println(welcomeSocketAddress);
+        //System.out.println(welcomeSocket.getInetAddress().toString());
         while(true) {
             Socket connectionSocket = welcomeSocket.accept();
 

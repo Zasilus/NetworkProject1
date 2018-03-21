@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.nio.Buffer;
 
 public class ProofOfConcept {
@@ -25,6 +26,8 @@ public class ProofOfConcept {
     }
 
     public static void main(String args[]) throws Exception{
+        BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println(userInput.readLine());
         File directory = new File("src\\config_neighbors.txt").getAbsoluteFile();
         BufferedReader reader = new BufferedReader(new FileReader(directory));
         //System.out.println(reader.readLine());
