@@ -6,13 +6,12 @@ import java.util.ArrayList;
 //My Welcomeport is 50240
 //My neighbor connection ports are 50241 and 50242;
 //Neighbors will recogniZe neighbor Connections through the message "n(localportNumber)
+//FileTransfers will be initiated from port 50243 to the welcoming port
 
 public class p2p{
     private static Thread thread1;
     private static Socket[] outGoingNeighbors = new Socket[2];
     private static Thread welcome;
-    private static Thread input;
-    private static Thread sending;
     private static Thread heartbeat;
     private static Thread neighbor1;
     private static Thread neighbor2;
@@ -234,8 +233,31 @@ public class p2p{
     }
 
     public static void recieveResponse(String response){
+        String[]splittingResponse = response.split(";");
+        String[]obtainingQueryID = splittingResponse[0].split(":");
+        int queryID = Integer.parseInt(obtainingQueryID[1]);
+        int checkMine = queryID%6;
+        if(checkMine == queryMultiplier){
+            String[]socketInfo  = splittingResponse[1].split(":");
 
+        }
     }
+
+    public static Socket initiateFileTransfer(String []socketInfo){
+        try {
+            InetAddress destinationIP = InetAddress.getByName(socketInfo[0]);
+            int portNumber = Integer.parseInt(socketInfo[1]);
+            InetAddress localHost = getPublicHostName();
+            Socket fileTransferSocket = new Socket(destinationIP,portNumber,localHost,50243);
+            return fileTransferSocket;
+        }catch(Exception e){
+            System.out.println("Invalid hostName found for initiating filetransfer feelsbad man");
+            return null;
+        }
+    }
+
+
+
 
     public static void get(File file) {
 
