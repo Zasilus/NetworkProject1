@@ -61,24 +61,48 @@ public class p2p{
      *
      * @throws Exception
      */
-    public static Socket[] connect() throws Exception{
-        BufferedReader fileReader = new BufferedReader((new FileReader("config_neighbors.txt")));
-        String neighbor1 = fileReader.readLine();
-        String neighbor2 = fileReader.readLine();
-        InetAddress host = p2p.getPublicHostName();
-        System.out.println(host.getHostName());
-        //System.out.println(host.getHostAddress());
+    public static Socket[] connect(){
+        InetAddress host;
+        String neighbor1;
+        String neighbor2;
         Socket[] neighbor = new Socket[2];
-        String [] neighbor1Arr = neighbor1.split(" ");
-        String [] neighbor2Arr = neighbor2.split(" ");
+        String[] neighbor1Arr;
+        String[] neighbor2Arr;
+        int portNo1;
+        int portNo2;
+
+        try {
+            BufferedReader fileReader = new BufferedReader((new FileReader("config_neighbors.txt")));
+            neighbor1 = fileReader.readLine();
+            neighbor2 = fileReader.readLine();
+            neighbor1Arr = neighbor1.split(" ");
+            neighbor2Arr = neighbor2.split(" ");
+            portNo1 = Integer.parseInt(neighbor1Arr[1]);
+            portNo2 = Integer.parseInt(neighbor2Arr[1]);
+            host = p2p.getPublicHostName();
+            InetAddress neighbor1address = InetAddress.getByName(neighbor1Arr[0]);
+            InetAddress neighbor2address = InetAddress.getByName(neighbor2Arr[0]);
+            System.out.println("Attempting to connect to neighbor " + neighbor1address.toString() + " on port number " + portNo1);
+            try{
+                neighbor[0] = new Socket(neighbor1address,portNo1, host, 50241);
+                System.out.println("Attempt to connect to" +  neighbor1address.toString() + "has succeeded!");
+            }catch (IOException e){
+                System.out.println("Attempt to connect to" +  neighbor1address.toString() + "has failed");
+            }
+            try {
+                neighbor[1] = new Socket(neighbor2address, portNo2, host, 50242);
+                System.out.println("Attempt to connect to" +  neighbor2address.toString() + "has succeeded!");
+            }catch (IOException e){
+                System.out.println("Attempt to connect to" +  neighbor2address.toString() + "has failed");
+            }
+        } catch (Exception e) {
+            System.out.println("File reading has failed!");
+        }
+
+
         //System.out.println(host.toString());
-        int portNo1 = Integer.parseInt(neighbor1Arr[1]);
-        int portNo2 = Integer.parseInt(neighbor2Arr[1]);
-        InetAddress neighbor1address = InetAddress.getByName(neighbor1Arr[0]);
-        InetAddress neighbor2address = InetAddress.getByName(neighbor2Arr[0]);
-        System.out.println("Attempting to connect to neighbor " + neighbor1address.toString() + " on port number " + portNo1);
-        neighbor[0] = new Socket(neighbor1address,portNo1, host, 50241);
-        neighbor[1] = new Socket(neighbor2address,portNo2, host, 50242);
+
+
         return neighbor;
     }
 
