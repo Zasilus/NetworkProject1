@@ -2,15 +2,24 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
+
+//My Welcomeport is 50240
+//My neighbor connection ports are 50241 and 50242;
+
+
 public class p2p{
     private static Thread thread1;
-    private static Socket[] neighbors = new Socket[2];
+    private static Socket[] outGoingNeighbors = new Socket[2];
     private static Thread welcome;
     private static Thread input;
     private static Thread sending;
     private static Thread query;
     private static Thread hit;
+    private static Thread heartbeat;
     private static ServerSocket welcomeSocket;
+    private static boolean connected = false;
+    private static Socket[] inComingNeighbors = new Socket[2];
+
     static ArrayList<Socket> connections = new ArrayList<Socket>();
     /**
      * This is the main method
@@ -18,19 +27,17 @@ public class p2p{
      * @throws Exception
      */
     public static void main(String args[]) throws Exception {
-        welcomeSocket = new ServerSocket(50240);
-        System.out.println("The socket was created");
-        BufferedReader userInputs = new BufferedReader(new InputStreamReader(System.in));
-        String command = userInputs.readLine();
-        if(command.equalsIgnoreCase("connect")){
-            neighbors = connect();
-        }
+        System.out.println("Starting . . .");
         welcome = new Thread(){
             @Override
             public void run() {
                 try {
+                    welcomeSocket = new ServerSocket(50240);
                     while (true) {
                         connections.add(welcomeSocket.accept());
+                        BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connections.get(connections.size()-1).getInputStream()));
+                        System.out.println("Connection accepted from " + connections.get(connections.size()-1).getInetAddress().toString());
+
 
                     }
                 }catch(IOException e){
@@ -40,6 +47,27 @@ public class p2p{
             }
         };
         welcome.run();
+        heartbeat = new Thread(){
+            @Override
+            public void run() {
+                super.run();
+            }
+        };
+        query = new Thread(){
+            @Override
+            public void run() {
+                super.run();
+            }
+        };
+        System.out.println("The socket was created");
+        BufferedReader userInputs = new BufferedReader(new InputStreamReader(System.in));
+        String command = userInputs.readLine();
+        if(command.equalsIgnoreCase("connect")){
+            outGoingNeighbors = connect();
+            connected = true;
+        }
+
+
         hit = new Thread(){
             @Override
             public void run() {
@@ -47,12 +75,7 @@ public class p2p{
             }
         };
 
-        query = new Thread(){
-            @Override
-            public void run() {
-                super.run();
-            }
-        };
+
 
 
     }
@@ -92,6 +115,8 @@ public class p2p{
             try {
                 neighbor[1] = new Socket(neighbor2address, portNo2, host, 50242);
                 System.out.println("Attempt to connect to" +  neighbor2address.toString() + "has succeeded!");
+                DataOutputStream outToServer = new DataOutputStream(neighbor[1].getOutputStream());
+                outToServer.writeBytes("hi");
             }catch (IOException e){
                 System.out.println("Attempt to connect to" +  neighbor2address.toString() + "has failed");
             }
@@ -134,8 +159,8 @@ public class p2p{
     }
 
     public void leave()throws Exception{
-        neighbors[1].close();
-        neighbors[0].close();
+        outGoingNeighbors[1].close();
+        outGoingNeighbors[0].close();
     }
 
     public void exit(ServerSocket welcomeSocket, Socket neighbor1, Socket neighbor2, Socket connectionSocket) throws Exception{
