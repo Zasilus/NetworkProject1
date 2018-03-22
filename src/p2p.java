@@ -163,7 +163,9 @@ public class p2p{
     }
     public static Socket fileTransfer(String responseMessage){
         String[]firstSplit = responseMessage.split(";");
-        String[]secondSplit = firstSplit[1].
+        String[]secondSplit = firstSplit[1].split(" ");
+        return null;
+
     }
 
 
