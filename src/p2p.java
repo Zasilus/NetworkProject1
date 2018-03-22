@@ -5,7 +5,8 @@ import java.util.ArrayList;
 
 //My Welcomeport is 50240
 //My neighbor connection ports are 50241 and 50242;
-//Neighbors will recogniZe neighbor Connections through the message "n(localportNumber)
+//File transfer welcome port is 50243
+//Neighbors will recognize neighbor Connections through the message "n(localportNumber)
 //FileTransfers will be initiated from port 50243 to the welcoming port
 
 public class p2p{
@@ -15,8 +16,9 @@ public class p2p{
     private static Thread heartbeat;
     private static Thread neighbor1;
     private static Thread neighbor2;
-    private static ServerSocket welcomeSocket;
+    private static ServerSocket neighborSocket;
     private static boolean connected = false;
+    private static ServerSocket fileTransferSocket;
     private static Socket[] inComingNeighbors = new Socket[2];
     private static File shared = new File("shared").getAbsoluteFile();
     private static File obtained = new File("obtained").getAbsoluteFile();
@@ -33,8 +35,8 @@ public class p2p{
     public static void main(String args[]) throws Exception {
         System.out.println("Starting . . .");
         try {
-            welcomeSocket = new ServerSocket(50240);
-            System.out.println("The welcome scoket was successfully started");
+            neighborSocket = new ServerSocket(50240);
+            System.out.println("The welcome socket was successfully started");
         }catch(IOException e) {
             System.out.println("An IO exception occurred while creating the welcoming socket");
             e.printStackTrace();
@@ -45,7 +47,7 @@ public class p2p{
 
                 try{
                     while (true) {
-                        connections.add(welcomeSocket.accept());
+                        connections.add(neighborSocket.accept());
                         BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connections.get(connections.size()-1).getInputStream()));
                         System.out.println("Connection accepted from " + connections.get(connections.size()-1).getInetAddress().toString());
                         String id = inFromClient.readLine();
@@ -68,6 +70,21 @@ public class p2p{
             }
         };
         welcome.run();
+        BufferedReader userInputs = new BufferedReader(new InputStreamReader(System.in));
+        String command = userInputs.readLine();
+        if(command.equalsIgnoreCase("connect")){
+            outGoingNeighbors = connect();
+            connected = true;
+            if(connected){
+                command = userInputs.readLine();
+                if(command.charAt(3)== ' '){
+                    String[] getCommand = command.split(" ");
+                    String fileName = getCommand[1];
+                    query(fileName,outGoingNeighbors[0],outGoingNeighbors[1]);
+                }
+            }
+        }
+
         neighbor1 = new Thread(){
             DataOutputStream out;
             BufferedReader in;
@@ -76,7 +93,14 @@ public class p2p{
                 try {
                     in = new BufferedReader(new InputStreamReader(inComingNeighbors[0].getInputStream()));
                     out = new DataOutputStream(inComingNeighbors[0].getOutputStream());
-
+                    String command;
+                    while ((command = in.readLine()) != null) {
+                        if(command.charAt(0)=='Q'){
+                            p2p.forwardQuery(inComingNeighbors[0],inComingNeighbors[1],command,fileTransferSocket);
+                        }else if(command.charAt(0)=='R'){
+                            p2p.recieveResponse(command,inComingNeighbors[1]);
+                        }
+                    }
                 }catch(IOException e){
                     System.out.println("Opening the stream reader has failed you suck at coding");
                 }
@@ -85,8 +109,25 @@ public class p2p{
             }
         };
         neighbor2 = new Thread(){
+            DataOutputStream out;
+            BufferedReader in;
             @Override
             public void run() {
+                try {
+                    in = new BufferedReader(new InputStreamReader(inComingNeighbors[1].getInputStream()));
+                    out = new DataOutputStream(inComingNeighbors[1].getOutputStream());
+                    String command;
+                    while ((command = in.readLine()) != null) {
+                        if(command.charAt(0)=='Q'){
+                            p2p.forwardQuery(inComingNeighbors[1],inComingNeighbors[0],command,fileTransferSocket);
+                        }else if(command.charAt(0)=='R'){
+                            p2p.recieveResponse(command,inComingNeighbors[0]);
+                        }
+                    }
+                }catch(IOException e){
+                    System.out.println("Opening the stream reader has failed you suck at coding");
+                }
+
                 super.run();
             }
         };
@@ -97,12 +138,8 @@ public class p2p{
             }
         };
 
-        BufferedReader userInputs = new BufferedReader(new InputStreamReader(System.in));
-        String command = userInputs.readLine();
-        if(command.equalsIgnoreCase("connect")){
-            outGoingNeighbors = connect();
-            connected = true;
-        }
+
+
 
 
         Thread hit = new Thread(){
@@ -170,32 +207,44 @@ public class p2p{
 
     private static InetAddress getPublicHostName() throws Exception{
         URL whatismyip = new URL("http://checkip.amazonaws.com");
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                whatismyip.openStream()));
-
+        BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
         String ip = in.readLine();
         InetAddress host = InetAddress.getByName(ip);
         return host;
     }
 
     public static void query(String fileName, Socket neighbor1, Socket neighbor2){
-        File fileShared = new File("shared//"+fileName);
-        File fileObtained = new File("obtained//"+fileName);
-        if(isInShared(shared,fileShared)||isInShared(obtained,fileObtained)){
-            System.out.println("File is already downloaded!");
-        }else {
-            int queryId = queryMultiplier + queriesSent * 6;
-            String queryProtocol = "Q:" + queryId + ";" + fileName;
-            try {
-                DataOutputStream neighbor1out = new DataOutputStream(neighbor1.getOutputStream());
-                DataOutputStream neighbor2out = new DataOutputStream(neighbor2.getOutputStream());
-                neighbor1out.writeBytes(queryProtocol);
-                neighbor2out.writeBytes(queryProtocol);
-                System.out.println("Sending a query for " + fileName + "to my peers!");
-                queriesSent++;
-            }catch(IOException e){
-                System.out.println("The creation of DataOutputStreams for the query has failed!");
+        try {
+            boolean have = false;
+            BufferedReader fileReader = new BufferedReader((new FileReader("config_sharing.txt")));
+            String readLine;
+            int numOfLines = 0;
+            String[] docArrs = new String[10];
+            while((readLine = fileReader.readLine())!=null){
+                docArrs[numOfLines]=readLine;
+                numOfLines++;
+                if(readLine.equalsIgnoreCase(fileName)){
+                    have = true;
+                }
             }
+            if(have){
+                System.out.println("You already have the book!");
+            }else{
+                int queryId = queryMultiplier + queriesSent * 6;
+                String queryProtocol = "Q:" + queryId + ";" + fileName;
+                try {
+                    DataOutputStream neighbor1out = new DataOutputStream(neighbor1.getOutputStream());
+                    DataOutputStream neighbor2out = new DataOutputStream(neighbor2.getOutputStream());
+                    neighbor1out.writeBytes(queryProtocol);
+                    neighbor2out.writeBytes(queryProtocol);
+                    System.out.println("Sending a query for " + fileName + "to my peers!");
+                    queriesSent++;
+                }catch(IOException e){
+                    System.out.println("The creation of DataOutputStreams for the query has failed!");
+                }
+            }
+        }catch(IOException e){
+            System.out.println("config File sharing is not found!");
         }
     }
 
@@ -207,14 +256,30 @@ public class p2p{
         String fileName = idFileName[0];
         InetAddress localHost = welcomeSocket.getInetAddress();
         File queriedFile = new File("shared//"+fileName);
-        if(isInShared(shared,queriedFile)){
-            int portNUmber = welcomeSocket.getLocalPort();
+        boolean have = false;
+        try {
+            BufferedReader fileReader = new BufferedReader((new FileReader("config_sharing.txt")));
+            String readLine;
+            int numOfLines = 0;
+            String[] docArrs = new String[10];
+            while ((readLine = fileReader.readLine()) != null) {
+                docArrs[numOfLines] = readLine;
+                numOfLines++;
+                if (readLine.equalsIgnoreCase(fileName)) {
+                    have = true;
+                }
+            }
+        }catch(Exception e){
+            System.out.println("Cannot find config_sharing file");
+        }
+        if(have){
+            int portNumber = welcomeSocket.getLocalPort();
             try {
                 localHost = getPublicHostName();
             }catch (Exception e){
                 System.out.println("public IP address of host not found");
             }
-            String response = "R:" + queryId + ";" + localHost + ":" + "50240"+";"+fileName;
+            String response = "R:" + queryId + ";" + localHost + ":" + "50243"+";"+fileName;
             try {
                 DataOutputStream incomingOut = new DataOutputStream(incoming.getOutputStream());
                 incomingOut.writeBytes(response);
@@ -232,15 +297,23 @@ public class p2p{
         }
     }
 
-    public static void recieveResponse(String response){
+    public static String[] recieveResponse(String response, Socket outGoing){
         String[]splittingResponse = response.split(";");
         String[]obtainingQueryID = splittingResponse[0].split(":");
         int queryID = Integer.parseInt(obtainingQueryID[1]);
         int checkMine = queryID%6;
         if(checkMine == queryMultiplier){
             String[]socketInfo  = splittingResponse[1].split(":");
-
+            return socketInfo;
+        }else{
+            try {
+                DataOutputStream outGoingOut = new DataOutputStream(outGoing.getOutputStream());
+                outGoingOut.writeBytes(response);
+            }catch(IOException e){
+                System.out.println("Error during recieveResponse");
+            }
         }
+        return null;
     }
 
     public static Socket initiateFileTransfer(String []socketInfo){
@@ -253,6 +326,50 @@ public class p2p{
         }catch(Exception e){
             System.out.println("Invalid hostName found for initiating filetransfer feelsbad man");
             return null;
+        }
+    }
+    public static void sendFile(Socket openedSocket, String fileName){
+        File file = new File("shared//"+fileName);
+        FileInputStream fileInputer = null;
+        BufferedInputStream bufferedInputer = null;
+        DataOutputStream writer = null;
+        byte[] fileByteArray = new byte [(int)file.length()];
+        try {
+            fileInputer = new FileInputStream(file);
+            bufferedInputer = new BufferedInputStream(fileInputer);
+            bufferedInputer.read(fileByteArray,0,fileByteArray.length);
+            writer = new DataOutputStream(openedSocket.getOutputStream());
+            System.out.println("Attemping to send out file to peer!");
+            writer.write(fileByteArray);
+            writer.flush();
+            System.out.println("File sent successfully");
+            bufferedInputer.close();
+            writer.close();
+            fileInputer.close();
+        }catch (Exception e){
+            System.out.println("File not found!");
+        }
+    }
+
+    public static void recieveFile(Socket socket,String fileName){
+        BufferedOutputStream inFromServer;
+        int bytesRead;
+        int current = 0;
+        try{
+            InputStream socketInput = socket.getInputStream();
+            byte[] fileArray = new byte[6022386];
+            inFromServer = new BufferedOutputStream(new FileOutputStream("obtained//"+fileName));
+            bytesRead=socketInput.read(fileArray,0,fileArray.length);
+            current = bytesRead;
+            do {
+                bytesRead = socketInput.read(fileArray,current,(fileArray.length-current));
+                if(bytesRead>=0)current +=bytesRead;
+            }while(bytesRead > -1);
+            inFromServer.write(fileArray,0,current);
+            inFromServer.flush();
+            System.out.println("File " + fileName + "has been recieved and stored in obtained folder");
+        }catch(IOException e){
+
         }
     }
 
